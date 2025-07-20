@@ -31,7 +31,6 @@ export default function DayGrid() {
         </div>
       ))}
       
-      {/* Calendar Days */}
       {days.map(day => (
         <DayCell 
           key={day.toString()}
