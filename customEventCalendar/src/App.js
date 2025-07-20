@@ -1,11 +1,11 @@
-import './App.css';
+import CalendarView from './components/calendar/CalendarView';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        Project
-      </header>
+    <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-6xl mx-auto">
+          <CalendarView />
+        </div>
     </div>
   );
 }
