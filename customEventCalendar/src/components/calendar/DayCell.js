@@ -19,14 +19,10 @@ export default function DayCell({ day, isCurrentMonth, isToday }) {
   return (
     <div
       className={`relative min-h-[120px] p-2 border border-gray-200
-        ${isCurrentMonth ? "bg-white" : "bg-gray-50 text-gray-400"}
-        ${isToday ? "ring-2 ring-blue-500 bg-blue-50" : ""}
         hover:bg-gray-50 transition-colors flex flex-col group`}
     >
       <div className="flex justify-between mb-1">
-        <span className={`text-sm 
-          ${isToday ? "font-bold text-blue-600" : ""}
-          ${!isCurrentMonth && "text-gray-400"}`}>
+        <span className="text-sm ">
           {day.getDate()}
         </span>
         <button
@@ -54,9 +50,6 @@ export default function DayCell({ day, isCurrentMonth, isToday }) {
         )}
       </div>
 
-      {isToday && (
-        <div className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></div>
-      )}
     </div>
   );
 }
