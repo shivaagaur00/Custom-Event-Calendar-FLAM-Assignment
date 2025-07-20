@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { showModal } from '../../store/calendarSlice';
-
 const colorClasses = {
   red: 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200',
   blue: 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200',
