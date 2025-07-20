@@ -16,7 +16,6 @@ export default function DayCell({ day, isCurrentMonth, isToday }) {
       })
     );
   };
-
   return (
     <div
       className={`relative min-h-[120px] p-2 border border-gray-200
