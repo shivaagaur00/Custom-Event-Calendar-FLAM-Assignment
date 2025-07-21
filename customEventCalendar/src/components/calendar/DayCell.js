@@ -1,55 +1,27 @@
-import EventBadge from "./EventBadge";
-import AddIcon from "@mui/icons-material/Add";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { isSameDay, parseISO, format } from "date-fns";
-import { showModal } from "../../store/calendarSlice";
-export default function DayCell({ day, isCurrentMonth, isToday }) {
-  const dispatch = useDispatch();
-  const events = useSelector((state) => state.calendar.events);
-  const dayEvents = events.filter((event) => isSameDay(parseISO(event.date), day));
-  const handleAddEvent = (e) => {
-    dispatch(
-      showModal({
-        modalType: "add",
-        event: { date: format(day, "yyyy-MM-dd") },
-      })
-    );
-  };
+import React from 'react';
+import EventBadge from './EventBadge';
+import AddIcon from '@mui/icons-material/Add';
+
+export default function DayCell({ day, currentDate, events, onAddEvent, onEditEvent }) {
+  const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+  const isToday = day.toDateString() === new Date().toDateString();
+
   return (
-    <div
-      className={`relative min-h-[120px] p-2 border border-gray-200
-        hover:bg-gray-50 transition-colors flex flex-col group`}
-    >
-      <div className="flex justify-between mb-1">
-        <span className="text-sm ">
+    <div className={`min-h-[100px] p-1 border ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}`}>
+      <div className="flex justify-between">
+        <span className={`text-sm ${isToday ? 'bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center' : ''}`}>
           {day.getDate()}
         </span>
-        <button
-          onClick={handleAddEvent}
-          className="text-gray-400 hover:text-blue-500
-            opacity-0 group-hover:opacity-100 transition
-            p-1 rounded hover:bg-gray-200"
-          aria-label="Add event"
-        >
+        <button onClick={() => onAddEvent(day)} className="text-gray-400 hover:text-blue-500">
           <AddIcon fontSize="small" />
         </button>
       </div>
-
-      <div className="flex-1 overflow-y-auto max-h-[80px]">
-        {dayEvents.length > 0 ? (
-          <div className="space-y-1">
-            {dayEvents.map((event) => (
-              <EventBadge key={event.id} event={event} />
-            ))}
-          </div>
-        ) : (
-          <div className="h-full flex items-center justify-center">
-            <span className="text-xs text-gray-400">No events</span>
-          </div>
-        )}
+      
+      <div className="mt-1 space-y-1">
+        {events.map(event => (
+          <EventBadge key={event.id} event={event} onClick={() => onEditEvent(event)} />
+        ))}
       </div>
-
     </div>
   );
 }

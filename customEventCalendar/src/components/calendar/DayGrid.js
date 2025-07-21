@@ -1,19 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  eachDayOfInterval,
-  isSameMonth, 
-  isSameDay,
-} from 'date-fns';
 import DayCell from './DayCell';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 
-export default function DayGrid() {
-  const currentDate = useSelector(state => new Date(state.calendar.currentDate));
-  
+export default function DayGrid({ currentDate, events, onAddEvent, onEditEvent }) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const startDate = startOfWeek(monthStart);
@@ -23,10 +12,7 @@ export default function DayGrid() {
   return (
     <div className="grid grid-cols-7">
       {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-        <div 
-          key={day} 
-          className="py-3 text-center text-sm font-medium text-gray-500 uppercase bg-gray-50"
-        >
+        <div key={day} className="py-2 text-center font-medium text-gray-500">
           {day}
         </div>
       ))}
@@ -35,8 +21,10 @@ export default function DayGrid() {
         <DayCell 
           key={day.toString()}
           day={day}
-          isCurrentMonth={isSameMonth(day, monthStart)}
-          isToday={isSameDay(day, new Date())}
+          currentDate={currentDate}
+          events={events.filter(e => new Date(e.date).toDateString() === day.toDateString())}
+          onAddEvent={onAddEvent}
+          onEditEvent={onEditEvent}
         />
       ))}
     </div>
