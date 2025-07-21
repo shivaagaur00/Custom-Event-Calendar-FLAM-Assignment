@@ -1,26 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MonthHeader from './MonthHeader';
 import DayGrid from './DayGrid';
 import EventFormModal from './../modals/EventFormModal';
+import { format, parseISO, isSameDay } from 'date-fns';
 
 export default function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState(null);
-  const [events, setEvents] = useState(() => {
+  const [events, setEvents] = useState([]);
+  const [draggedEvent, setDraggedEvent] = useState(null);
+
+  useEffect(() => {
     const savedEvents = localStorage.getItem('calendarEvents');
-    return savedEvents ? JSON.parse(savedEvents) : [];
-  });
+    if (savedEvents) {
+      setEvents(JSON.parse(savedEvents));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('calendarEvents', JSON.stringify(events));
+  }, [events]);
 
   const saveEvents = (updatedEvents) => {
     setEvents(updatedEvents);
-    localStorage.setItem('calendarEvents', JSON.stringify(updatedEvents));
   };
 
   const handleAddEvent = (date) => {
     setModalData({
       type: 'add',
-      event: { date: format(date, 'yyyy-MM-dd') }
+      event: { 
+        date: format(date, 'yyyy-MM-dd'),
+        time: '12:00'
+      }
     });
     setShowModal(true);
   };
@@ -38,6 +50,23 @@ export default function CalendarView() {
     setModalData(null);
   };
 
+  // Drag and drop functions
+  const handleDragStart = (event) => {
+    setDraggedEvent(event);
+  };
+
+  const handleDrop = (day) => {
+    if (!draggedEvent) return;
+    
+    const newDate = format(day, 'yyyy-MM-dd');
+    const updatedEvents = events.map(e => 
+      e.id === draggedEvent.id ? { ...e, date: newDate } : e
+    );
+    
+    saveEvents(updatedEvents);
+    setDraggedEvent(null);
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -51,6 +80,9 @@ export default function CalendarView() {
           events={events}
           onAddEvent={handleAddEvent}
           onEditEvent={handleEditEvent}
+          onDragStart={handleDragStart}
+          onDrop={handleDrop}
+          draggedEvent={draggedEvent}
         />
         
         {showModal && (
@@ -64,8 +96,4 @@ export default function CalendarView() {
       </div>
     </div>
   );
-}
-
-function format(date, formatStr) {
-  return date.toISOString().split('T')[0]; 
 }

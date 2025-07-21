@@ -1,13 +1,30 @@
 import React from 'react';
 import DayCell from './DayCell';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import { 
+  startOfMonth, endOfMonth, 
+  startOfWeek, endOfWeek, 
+  eachDayOfInterval, isSameMonth,
+  isSameDay
+} from 'date-fns';
 
-export default function DayGrid({ currentDate, events, onAddEvent, onEditEvent }) {
+export default function DayGrid({ 
+  currentDate, 
+  events, 
+  onAddEvent, 
+  onEditEvent, 
+  onDragStart, 
+  onDrop,
+  draggedEvent
+}) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const startDate = startOfWeek(monthStart);
   const endDate = endOfWeek(monthEnd);
   const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="grid grid-cols-7">
@@ -18,14 +35,24 @@ export default function DayGrid({ currentDate, events, onAddEvent, onEditEvent }
       ))}
       
       {days.map(day => (
-        <DayCell 
+        <div 
           key={day.toString()}
-          day={day}
-          currentDate={currentDate}
-          events={events.filter(e => new Date(e.date).toDateString() === day.toDateString())}
-          onAddEvent={onAddEvent}
-          onEditEvent={onEditEvent}
-        />
+          onDragOver={handleDragOver}
+          onDrop={() => onDrop(day)}
+          className={`min-h-[120px] border ${draggedEvent ? 'bg-gray-50' : ''}`}
+        >
+          <DayCell 
+            day={day}
+            isCurrentMonth={isSameMonth(day, currentDate)}
+            events={events.filter(event => {
+              const eventDate = new Date(event.date);
+              return isSameDay(eventDate, day);
+            })}
+            onAddEvent={onAddEvent}
+            onEditEvent={onEditEvent}
+            onDragStart={onDragStart}
+          />
+        </div>
       ))}
     </div>
   );
