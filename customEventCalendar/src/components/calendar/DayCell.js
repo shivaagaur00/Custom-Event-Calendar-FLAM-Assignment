@@ -26,7 +26,6 @@ export default function DayCell({
           <AddIcon fontSize="small" />
         </button>
       </div>
-      
       <div className="mt-1 space-y-1 flex-1 overflow-y-auto">
         {events.map(event => (
           <EventBadge 

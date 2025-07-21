@@ -3,8 +3,9 @@ import { format, parseISO, addDays, addWeeks, addMonths } from 'date-fns';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function EventFormModal({ modalData, onClose, events, saveEvents }) {
+export default function EventFormModal({ modalData, onClose, events, setEvents }) {
   const isEdit = modalData.type === 'edit';
+
   const [formData, setFormData] = useState({
     id: modalData.event?.id || Date.now().toString(),
     title: modalData.event?.title || '',
@@ -13,16 +14,18 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
     description: modalData.event?.description || '',
     color: modalData.event?.color || 'blue',
     recurrence: modalData.event?.recurrence || 'none',
-    recurrenceEnd: modalData.event?.recurrenceEnd || ''
+    recurrenceEnd: modalData.event?.recurrenceEnd || '',
   });
+
   const [conflicts, setConflicts] = useState([]);
 
   useEffect(() => {
     if (formData.date && formData.time) {
-      const conflictingEvents = events.filter(e => 
-        e.id !== formData.id && 
-        e.date === formData.date && 
-        e.time === formData.time
+      const conflictingEvents = events.filter(
+        (e) =>
+          e.id !== formData.id &&
+          e.date === formData.date &&
+          e.time === formData.time
       );
       setConflicts(conflictingEvents);
     }
@@ -30,28 +33,26 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (conflicts.length > 0 && !window.confirm('There are conflicting events. Do you want to proceed?')) {
       return;
     }
-    
+
     let updatedEvents;
+
     if (isEdit) {
-      updatedEvents = events.map(e => e.id === formData.id ? formData : e);
+      updatedEvents = events.map((e) => (e.id === formData.id ? formData : e));
     } else {
       updatedEvents = [...events, formData];
-      
-      // Handle recurring events
+
       if (formData.recurrence !== 'none') {
         const baseDate = parseISO(formData.date);
         let currentDate = baseDate;
         let count = 0;
-        const maxRecurrences = 100; // Safety limit
-        
+        const maxRecurrences = 100;
+
         while (count < maxRecurrences) {
           count++;
-          
-          // Calculate next date based on recurrence
           switch (formData.recurrence) {
             case 'daily':
               currentDate = addDays(currentDate, 1);
@@ -63,33 +64,33 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
               currentDate = addMonths(currentDate, 1);
               break;
             default:
-              count = maxRecurrences; // Exit loop
+              count = maxRecurrences;
           }
-          
-          // Check if we've passed the recurrence end date
+
           if (formData.recurrenceEnd && currentDate > new Date(formData.recurrenceEnd)) {
             break;
           }
-          
-          // Add recurring event
+
           updatedEvents.push({
             ...formData,
             id: `${formData.id}-${count}`,
             date: format(currentDate, 'yyyy-MM-dd'),
-            isRecurring: true
+            isRecurring: true,
           });
         }
       }
     }
-    
-    saveEvents(updatedEvents);
+
+    setEvents(updatedEvents);
     onClose();
   };
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this event?')) {
-      const updatedEvents = events.filter(e => e.id !== formData.id && !e.id.startsWith(`${formData.id}-`));
-      saveEvents(updatedEvents);
+      const updatedEvents = events.filter(
+        (e) => e.id !== formData.id && !e.id.startsWith(`${formData.id}-`)
+      );
+      setEvents(updatedEvents);
       onClose();
     }
   };
@@ -105,37 +106,37 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
             <CloseIcon />
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {conflicts.length > 0 && (
             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-2 text-sm">
-              <p className="font-medium">Warning: There are {conflicts.length} conflicting event(s).</p>
+              <p className="font-medium">Warning: {conflicts.length} conflicting event(s).</p>
               <ul className="list-disc pl-5 mt-1">
-                {conflicts.slice(0, 3).map(conflict => (
+                {conflicts.slice(0, 3).map((conflict) => (
                   <li key={conflict.id}>{conflict.title}</li>
                 ))}
               </ul>
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Title*</label>
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full p-2 border rounded"
               required
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Date*</label>
               <input
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 className="w-full p-2 border rounded"
                 required
               />
@@ -145,29 +146,29 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
               <input
                 type="time"
                 value={formData.time}
-                onChange={(e) => setFormData({...formData, time: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                 className="w-full p-2 border rounded"
                 required
               />
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-1">Description</label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 border rounded"
               rows={3}
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Color</label>
               <select
                 value={formData.color}
-                onChange={(e) => setFormData({...formData, color: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                 className="w-full p-2 border rounded"
               >
                 <option value="blue">Blue</option>
@@ -177,12 +178,12 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
                 <option value="yellow">Yellow</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">Recurrence</label>
               <select
                 value={formData.recurrence}
-                onChange={(e) => setFormData({...formData, recurrence: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, recurrence: e.target.value })}
                 className="w-full p-2 border rounded"
               >
                 <option value="none">None</option>
@@ -192,19 +193,19 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
               </select>
             </div>
           </div>
-          
+
           {formData.recurrence !== 'none' && (
             <div>
               <label className="block text-sm font-medium mb-1">Recurrence End Date (optional)</label>
               <input
                 type="date"
                 value={formData.recurrenceEnd}
-                onChange={(e) => setFormData({...formData, recurrenceEnd: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, recurrenceEnd: e.target.value })}
                 className="w-full p-2 border rounded"
               />
             </div>
           )}
-          
+
           <div className="flex justify-between pt-4 border-t">
             {isEdit && (
               <button
@@ -216,7 +217,7 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
                 Delete
               </button>
             )}
-            
+
             <div className="flex gap-2 ml-auto">
               <button
                 type="button"

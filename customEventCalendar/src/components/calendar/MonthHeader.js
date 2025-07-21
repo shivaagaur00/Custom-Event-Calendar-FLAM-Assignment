@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 export default function MonthHeader({ currentDate, setCurrentDate }) {

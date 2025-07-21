@@ -4,7 +4,7 @@ import {
   startOfMonth, endOfMonth, 
   startOfWeek, endOfWeek, 
   eachDayOfInterval, isSameMonth,
-  isSameDay
+  format
 } from 'date-fns';
 
 export default function DayGrid({ 
@@ -44,10 +44,7 @@ export default function DayGrid({
           <DayCell 
             day={day}
             isCurrentMonth={isSameMonth(day, currentDate)}
-            events={events.filter(event => {
-              const eventDate = new Date(event.date);
-              return isSameDay(eventDate, day);
-            })}
+            events={events.filter(event => event.date === format(day, 'yyyy-MM-dd'))}
             onAddEvent={onAddEvent}
             onEditEvent={onEditEvent}
             onDragStart={onDragStart}
