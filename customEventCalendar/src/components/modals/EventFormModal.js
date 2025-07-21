@@ -44,38 +44,42 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
         
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label>Title</label>
+            <label className='pr-4'>Title:</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({...formData, title: e.target.value})}
               required
+              className='bg-gray-300 rounded'
             />
           </div>
           
           <div>
-            <label>Date</label>
+            <label className='pr-4'>Date:</label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => setFormData({...formData, date: e.target.value})}
               required
+              className='bg-slate-200 p-1 rounded-md'
             />
           </div>
           
           <div>
-            <label>Description</label>
+            <label className='pr-4'>Description:</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
+              className='bg-gray-300 rounded h-6'
             />
           </div>
           
           <div>
-            <label>Color</label>
+            <label className='pr-2'>Color:</label>
             <select
               value={formData.color}
               onChange={(e) => setFormData({...formData, color: e.target.value})}
+              className='bg-slate-200 p-2 rounded-md'
             >
               <option value="blue">Blue</option>
               <option value="red">Red</option>
@@ -92,8 +96,8 @@ export default function EventFormModal({ modalData, onClose, events, saveEvents 
             )}
             
             <div className="space-x-2">
-              <button type="button" onClick={onClose}>Cancel</button>
-              <button type="submit">{isEdit ? 'Save' : 'Add'}</button>
+              <button type="button" onClick={onClose} className='bg-slate-200 px-3 py-1 rounded-md'>Cancel</button>
+              <button type="submit" className='bg-slate-200 px-3 py-1 rounded-md'>{isEdit ? 'Save' : 'Add'}</button>
             </div>
           </div>
         </form>

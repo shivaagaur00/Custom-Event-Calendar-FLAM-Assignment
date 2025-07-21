@@ -44,7 +44,7 @@ export default function MonthHeader({ currentDate, setCurrentDate }) {
             <ExpandMore fontSize="small" />
           </button>
           {showMonthPicker && (
-            <div className="absolute grid grid-cols-3 gap-1 bg-white border p-2 z-10">
+            <div className="absolute grid gap-1 bg-white border p-2 z-10">
               {months.map((month, i) => (
                 <button key={month} onClick={() => changeMonth(i)}>
                   {month}
